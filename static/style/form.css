@@ -1,0 +1,68 @@
+form {
+    position: absolute;
+    z-index: 1000;
+    display: flex;
+    width: 100%;
+    /* height: 100vh; */
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: rgba(0,0,0,.2);
+}
+
+form * {
+    display: block;
+    width: 200px;
+    border-radius: 10px;
+    border: none;
+}
+
+form button {
+    height: 25px;
+    background-color: darkorange;
+    color: whitesmoke;
+    font-weight: bolder;
+    margin-bottom: 2px;
+    box-shadow: 0px 0px 12px black;
+}
+
+form input[type="text"] {
+    height: 40px;
+    margin-bottom: 20px;
+    color: white;
+    background-color: #222;
+    text-align: center;
+    font-size: 16px;
+}
+
+form input::placeholder {
+    color: lightgray;
+    text-align: center;
+    font-size: 18px;
+}
+
+.spinner-bg {
+
+    position: absolute;
+    top: 50%;
+    left: calc(50% - 25px);
+    width: 80px;
+    height: 80px;
+    /* background-color: yellow; */
+}
+
+.spinner {
+    width: 100%;
+    height: 100%;
+}
+
+.loading-text {
+    position: relative;
+    top: -100px;
+    display: block;
+    color: white;
+    /* background-color: red; */
+    text-align: center;
+    width: 100%;
+}
