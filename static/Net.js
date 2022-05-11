@@ -79,13 +79,13 @@ const checkIfGameBegins = async () => {
     }
 }
 
-const getRoundTime = async () => {
+const getRoundTime = () => {
     try {
         const counterInterval = setInterval(async () => {
-            console.log('leci')
             const res = await fetch("/getInfo", {
                 method: "POST",
             })
+            console.log('leci')
             const resData = await res.json()
             // console.log(resData)
             if (resData) {
@@ -106,8 +106,8 @@ const getRoundTime = async () => {
                     endScreen(resData.time, resData.whoMoves)
                 }
             }
+
         }, 1000)
-        console.log(resData)
     } catch (err) {
         console.log(err)
     }
@@ -121,8 +121,8 @@ export const informThereWasMove = async (prevPos, actualPos, wasBeating) => {
             body: JSON.stringify({ user: userD, prevPos, actualPos, wasBeating })
         })
 
-        const resData = await res.json()
-        console.log(resData)
+        // const resData = await res.json()
+        // console.log(resData)
 
     } catch (err) {
         console.log(err)

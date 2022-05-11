@@ -37,10 +37,11 @@ const getUsersLenght = (req, res) => {
 
 const changeMovement = (req, res) => {
     const { user, prevPos, actualPos, wasBeating } = JSON.parse(req.body)
-    // console.log(user, prevPos, actualPos)
     movement.prev = prevPos
     movement.actual = actualPos
     movement.color = user.type
+    movement.wasBeating = wasBeating
+    console.log(user, prevPos, actualPos, wasBeating)
     // console.log(wasBeating)
 
     counter = 30
@@ -56,12 +57,12 @@ const changeMovement = (req, res) => {
         whoMoves = "white"
     }
 
-    // console.log(counter, whoMoves)
-    return res.status(200)
+    return res.status(200).send({ msg: 'done' })
 }
 
 const getMovementInfo = (req, res) => {
-    return res.status(200).send({ time: counter, whoMoves, pawns: { black: blackPawns, white: whitePawns } })
+    // console.log({ time: counter, whoMoves, pawns: { black: blackPawns, white: whitePawns } })
+    return res.send({ time: counter, whoMoves, pawns: { black: blackPawns, white: whitePawns } })
 }
 
 const getBoardUpdate = (req, res) => {
@@ -69,7 +70,6 @@ const getBoardUpdate = (req, res) => {
 }
 
 const startGame = (req, res) => {
-    // console.log('game started')
     setInterval(() => {
         counter--
     }, 1000)
