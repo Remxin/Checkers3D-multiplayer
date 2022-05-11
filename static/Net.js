@@ -1,4 +1,4 @@
-import { deleteForm } from "./Ui.js"
+import { deleteForm, endScreen, informUserWhoseTurn } from "./Ui.js"
 import { game } from './Main.js'
 
 export let userD
@@ -53,12 +53,13 @@ export const login = async (name) => {
                 game.placeStartPawns()
                 if (userD.type === 'black') {
                     game.rotateCam()
-                    // getRoundTime()
                 }
 
                 if (userD.type === 'white') {
                     game.click()
+                    serverStartCounter()
                 }
+                getRoundTime()
             }
         }, 1000)
     } catch (err) {
@@ -78,26 +79,46 @@ const checkIfGameBegins = async () => {
     }
 }
 
-// const getRoundTime = async () => {
-//     try {
-//         setInterval(async () => {
-//             const res = await fetch("/getTime", {
-//                 method: "POST",
-//             })
-//             // const resData = await res.json()
-//         }, 1000)
-//         console.log(resData)
-//     } catch (err) {
-//         console.log(err)
-//     }
-// }
+const getRoundTime = async () => {
+    try {
+        const counterInterval = setInterval(async () => {
+            console.log('leci')
+            const res = await fetch("/getInfo", {
+                method: "POST",
+            })
+            const resData = await res.json()
+            // console.log(resData)
+            if (resData) {
+                // console.log(resData.pawns)
+                if (resData.pawns.white === 0) { // zwycięstwo poprzez bicia
+                    console.log('win')
+                    endScreen(resData.time, "white")
+                    clearInterval(counterInterval)
+                } else if (resData.pawns.black === 0) {
+                    console.log('win')
+                    endScreen(resData.time, "black")
+                    clearInterval(counterInterval)
+                }
+                informUserWhoseTurn(resData.time, resData.whoMoves)
+                if (resData.time < 0) { // zwycięstwo poprzez czas
+                    console.log('win')
+                    clearInterval(counterInterval)
+                    endScreen(resData.time, resData.whoMoves)
+                }
+            }
+        }, 1000)
+        console.log(resData)
+    } catch (err) {
+        console.log(err)
+    }
+}
 
 
-export const informThereWasMove = async (prevPos, actualPos) => {
+export const informThereWasMove = async (prevPos, actualPos, wasBeating) => {
     try {
         const res = await fetch("/changeMovement", {
             method: "POST",
-            body: JSON.stringify({ user: userD, prevPos, actualPos })
+            body: JSON.stringify({ user: userD, prevPos, actualPos, wasBeating })
         })
 
         const resData = await res.json()
@@ -107,4 +128,31 @@ export const informThereWasMove = async (prevPos, actualPos) => {
         console.log(err)
     }
 }
+
+async function serverStartCounter() {
+    try {
+        const res = await fetch("/startGame", {
+            method: "POST",
+        })
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+
+export const getChanges = async () => {
+    const gameH = game
+    try {
+        const res = await fetch("/getPawnsChanges", {
+            method: "POST",
+        })
+        const resData = await res.json()
+        gameH.movePawn(resData.movement.prev, resData.movement.actual, resData.movement.color)
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 

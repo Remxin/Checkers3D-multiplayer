@@ -1,4 +1,11 @@
 import { login } from "/Net.js"
+import { userD, getChanges } from "./Net.js"
+import { game } from "./Main.js"
+
+export let activeCounter = null
+export let unactiveCounter = null
+export let unactiveD = null
+let lastTurn = 'white'
 
 export const generateLoginForm = () => {
     console.log('leci')
@@ -33,6 +40,23 @@ export const generateLoginForm = () => {
     // --- appending form ---
     document.getElementById("main").appendChild(form)
 
+    // ---- counter -----
+    const counter = document.createElement('h3')
+    counter.classList.add("active-counter")
+    activeCounter = counter
+    activeCounter.style.display = 'none'
+    const unactiveDiv = document.createElement("div")
+    unactiveDiv.classList.add("dark-screen")
+    const counter2 = document.createElement('h3')
+    counter2.classList.add("unactive-counter")
+    unactiveCounter = counter2
+    unactiveD = unactiveDiv
+    unactiveD.style.display = 'none'
+    unactiveDiv.appendChild(counter2)
+
+    document.getElementById("main").appendChild(activeCounter)
+    document.getElementById("main").appendChild(unactiveD)
+
 }
 
 export const deleteForm = () => {
@@ -41,56 +65,37 @@ export const deleteForm = () => {
     main.removeChild(form[0])
 }
 
-// export const displayGame = () => {
+export const endScreen = (time, whoMoves) => {
+    let won
+    if (whoMoves === "white") {
+        won = "Black"
+    } else {
+        won = 'White'
+    }
 
-//     // --- scena 3D ---
-//     const scene = new THREE.Scene();
+    const div = document.createElement("div")
+    div.innerHTML = `<h2>${won} wins!</h2>`
+    div.classList.add("end-screen")
+    document.getElementById("main").innerHTML = ""
+    document.getElementById("main").appendChild(div)
 
-//     // --- axes ---
-//     const axes = new THREE.AxesHelper(1000)
-//     scene.add(axes)
+}
 
-//     // ---kamera ---
-//     const camera = new THREE.PerspectiveCamera(
-//         45,    // kąt patrzenia kamery (FOV - field of view)
-//         4 / 3,    // proporcje widoku, powinny odpowiadać proporcjom ekranu przeglądarki użytkownika
-//         0.1,    // minimalna renderowana odległość
-//         10000    // maksymalna renderowana odległość od kamery
-//     );
-
-//     // renderer wykorzystujący WebGL - działa stabilnie na wszystkich
-//     // najnowszych przeglądarkach zarówno desktopowych jak mobilnych
-
-//     const renderer = new THREE.WebGLRenderer();
-
-//     // kolor tła sceny - uwaga na prefix 0x a nie #
-
-//     renderer.setClearColor(0xdddddd);
-
-//     // ustal rozmiary renderowanego okna w px (szer, wys)
-
-//     renderer.setSize(window.innerWidth, window.innerHeight);
-
-//     renderer.domElement.setAttribute("id", "renderer")
-//     $("#main").append(renderer.domElement);
-
-//     camera.position.set(100, 100, 100)
-//     camera.lookAt(scene.position)
-
-
-//     camera.position.set(100, 100, 100)
-
-
-//     camera.lookAt(scene.position);
-
-//     function render() {
-
-
-//         requestAnimationFrame(render);
-//         console.log("render leci")
-
-//         renderer.render(scene, camera);
-//     }
-
-//     render();
-// }
+export const informUserWhoseTurn = (time, whoMoves) => {
+    if (userD.type === whoMoves) {
+        // console.log(lastTurn, whoMoves)
+        if (lastTurn !== whoMoves) {
+            lastTurn = whoMoves
+            getChanges()
+            game.click()
+        }
+        unactiveD.style.display = 'none'
+        activeCounter.style.display = "flex"
+        activeCounter.innerText = time
+    } else {
+        unactiveD.style.display = 'flex'
+        activeCounter.style.display = "none"
+        unactiveCounter.innerText = time
+        lastTurn = whoMoves
+    }
+}

@@ -2,6 +2,7 @@ import { Field } from "./Field.js";
 import { Pawn } from './Pawn.js'
 import { helpers } from "./Helpers.js";
 import { userD, informThereWasMove } from "./Net.js";
+import { game } from "./Main.js";
 
 export class Game {
     constructor() {
@@ -112,7 +113,6 @@ export class Game {
     }
 
     click() {
-        console.log('robi się click')
         const raycaster = new THREE.Raycaster()
         const mouseVector = new THREE.Vector2()
         $(document).mousedown((e) => {
@@ -201,7 +201,7 @@ export class Game {
                         // ! usuwam onclicka
                         console.log('tutaj')
                         $(document).off("mousedown")
-                        informThereWasMove(pawnPrevPosition, pawnActualPosition)
+                        informThereWasMove(pawnPrevPosition, pawnActualPosition, this.wasBeating)
 
                         // ------- odznaczanie pionka
                     } else {
@@ -217,7 +217,37 @@ export class Game {
 
     }
 
+    movePawn(prev, actual, color) {
+        const pawn = findPawnByPos(game.pawns, prev)
+        pawn.moveTo(actual.x, actual.y)
+        this.actualizeTab(prev, actual, color)
+    }
 
+    actualizeTab(prev, actual, color) {
+        console.log(prev, actual)
+        this.pionki[prev.y - 1][prev.x - 1] = 0
+        if (color === "white") {
+            this.pionki[actual.y - 1][actual.x - 1] = 1
+        } else if (color === "black") {
+            this.pionki[actual.y - 1][actual.x - 1] = 2
+        }
+        console.log(this.pionki)
+    }
+
+
+}
+
+function findPawnByPos(pawnsTab, cords) {
+    const { x, y } = cords
+    console.log(x, y)
+    const foundPawn = pawnsTab.find((pawn) => {
+        // console.log(pawn)
+        if (pawn.x === x && pawn.y === y) {
+
+            return pawn
+        }
+    })
+    return foundPawn
 }
 
 function findPawnObject(pawnsTab, pawnMesh) {
