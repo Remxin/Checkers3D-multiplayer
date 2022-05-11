@@ -1,5 +1,6 @@
 import { Field } from "./Field.js";
 import { Pawn } from './Pawn.js'
+import { Queen } from "./Queen.js";
 import { helpers } from "./Helpers.js";
 import { userD, informThereWasMove } from "./Net.js";
 import { game } from "./Main.js";
@@ -68,6 +69,7 @@ export class Game {
     render = () => {
         requestAnimationFrame(this.render);
         this.renderer.render(this.scene, this.camera);
+        TWEEN.update();
     }
 
     showBoard = () => {
@@ -92,10 +94,12 @@ export class Game {
             row.forEach((field) => {
                 if (field === 2) {
                     const blackPawn = new Pawn(x, y, "black")
+                    // const blackPawn = new Queen(x, y, "black")
                     this.pawns.push(blackPawn)
                     this.scene.add(blackPawn.getFigure())
                 } else if (field === 1) {
                     const whitePawn = new Pawn(x, y, "white")
+                    // const whitePawn = new Queen(x, y, "white")
                     this.pawns.push(whitePawn)
                     this.scene.add(whitePawn.getFigure())
                 }
@@ -128,6 +132,7 @@ export class Game {
                     const tracedPawn = findPawnObject(this.pawns, intersects[0].object)
                     if (tracedPawn && tracedPawn.color === userD.type) { // jeśli faktycznie kliknięto w pionka
                         this.isPawnClicked = true // teraz można klikać pola
+                        console.log(tracedPawn.showMoves(this.pionki, []))
                         const moves = tracedPawn.showMoves(this.pionki, []).moveTab
                         this.canHitAgain = tracedPawn.showMoves(this.pionki, []).canHitAgain
                         this.pawnClicked = tracedPawn
@@ -186,7 +191,7 @@ export class Game {
                             //             this.canMoveTiles.push(foundTile) // w te pola można kliknąć w następnym kliknięciu, aby się ruszyć
                             //         }
                             //     })
-                            //     // console.log(this.canMoveTiles)
+                            //   // console.log(this.canMoveTiles)
                             //     this.canMoveTiles.forEach((tile) => {
                             //         tile.setColor(0xffff00) // podświetlenie możliwości poruszenia się
                             //     })
@@ -198,6 +203,12 @@ export class Game {
                         this.canMoveTiles = [] // tablica ruchów jest pusta
                         this.pawnClicked = null // nie ma pionka klikniętego
 
+
+                        // ? promocja do królowki
+                        console.log(pawnActualPosition)
+                        if (pawnActualPosition.y === 1 || pawnActualPosition.y === 8) {
+                            this.promoteToQueen(pawnActualPosition)
+                        }
                         // ! usuwam onclicka
                         console.log('tutaj')
                         $(document).off("mousedown")
@@ -217,21 +228,54 @@ export class Game {
 
     }
 
-    movePawn(prev, actual, color) {
+    async movePawn(prev, actual, color, wasBeating) {
         const pawn = findPawnByPos(game.pawns, prev)
+        console.log(pawn)
+        console.log(prev, actual)
         pawn.moveTo(actual.x, actual.y)
-        this.actualizeTab(prev, actual, color)
+        if (actual.y === 1 || actual.y === 8) {
+            this.promoteToQueen(actual)
+        }
+        if (wasBeating) {
+            await helpers.removeEnemyPawn(prev, actual)
+        }
+        this.actualizeTab(prev, actual, color, pawn)
+        await pawn.animate()
+        this.resolvePosBug()
     }
 
     actualizeTab(prev, actual, color) {
-        console.log(prev, actual)
+        // console.log(prev, actual)
         this.pionki[prev.y - 1][prev.x - 1] = 0
         if (color === "white") {
             this.pionki[actual.y - 1][actual.x - 1] = 1
         } else if (color === "black") {
             this.pionki[actual.y - 1][actual.x - 1] = 2
         }
-        console.log(this.pionki)
+
+
+        // console.log(this.pionki)
+    }
+
+    resolvePosBug() {
+        this.pawns.forEach(pawn => {
+            // console.log(pawn)
+            pawn.animate()
+        })
+    }
+
+    promoteToQueen(pawnActualPosition) {
+        const prevP = game.pawns.find((paw) => {
+            return (paw.x === pawnActualPosition.x && paw.y === pawnActualPosition.y)
+        })
+        game.pawns.filter((paw) => {
+            return (paw.x !== pawnActualPosition.x && paw.y !== pawnActualPosition.y)
+        })
+        const queen = new Queen(pawnActualPosition.x, pawnActualPosition.y, prevP.color)
+        console.log(prevP)
+        prevP.removeFromBoard(this.scene)
+        game.pawns.push(queen)
+        this.scene.add(queen.getFigure())
     }
 
 
@@ -239,7 +283,6 @@ export class Game {
 
 function findPawnByPos(pawnsTab, cords) {
     const { x, y } = cords
-    console.log(x, y)
     const foundPawn = pawnsTab.find((pawn) => {
         // console.log(pawn)
         if (pawn.x === x && pawn.y === y) {
@@ -270,6 +313,3 @@ function findTileObjectByCords(tilesTab, cords) {
     return foundTile
 }
 
-function findTileObjectByClick(tilesTab, cords) {
-
-}

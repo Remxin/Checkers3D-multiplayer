@@ -2,7 +2,6 @@ const { users } = require("../data/users")
 const path = require("path")
 const { countReset } = require("console")
 const { set } = require("express/lib/application")
-// const { move } = require("../routes/authRoutes")
 
 let counter = 30
 let whoMoves = 'white'
@@ -41,7 +40,6 @@ const changeMovement = (req, res) => {
     movement.actual = actualPos
     movement.color = user.type
     movement.wasBeating = wasBeating
-    console.log(user, prevPos, actualPos, wasBeating)
     // console.log(wasBeating)
 
     counter = 30
@@ -61,7 +59,6 @@ const changeMovement = (req, res) => {
 }
 
 const getMovementInfo = (req, res) => {
-    // console.log({ time: counter, whoMoves, pawns: { black: blackPawns, white: whitePawns } })
     return res.send({ time: counter, whoMoves, pawns: { black: blackPawns, white: whitePawns } })
 }
 
@@ -76,4 +73,10 @@ const startGame = (req, res) => {
     return res.status(200)
 }
 
-module.exports = { login, getUsersLenght, changeMovement, getMovementInfo, getBoardUpdate, startGame }
+
+const resetGame = (req, res) => {
+    users.length = 0
+    return res.send({ msg: 'users deleted' })
+}
+
+module.exports = { login, getUsersLenght, changeMovement, getMovementInfo, getBoardUpdate, startGame, resetGame }

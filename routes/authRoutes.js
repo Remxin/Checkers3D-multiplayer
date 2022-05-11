@@ -8,6 +8,7 @@ router.post("/changeMovement", authControllers.changeMovement)
 router.post("/getInfo", authControllers.getMovementInfo)
 router.post("/startGame", authControllers.startGame)
 router.post("/getPawnsChanges", authControllers.getBoardUpdate)
+router.post("/resetGame", authControllers.resetGame)
 
 
 module.exports = router

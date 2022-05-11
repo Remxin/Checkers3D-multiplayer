@@ -8,7 +8,6 @@ export let unactiveD = null
 let lastTurn = 'white'
 
 export const generateLoginForm = () => {
-    console.log('leci')
     // global variable name
     let name = ""
     const form = document.createElement("form")
@@ -31,6 +30,11 @@ export const generateLoginForm = () => {
     // -- reset button --
     const resetButton = document.createElement("button")
     resetButton.innerHTML = "RESET"
+    resetButton.onclick = (e) => {
+        e.preventDefault()
+        reset()
+    }
+
 
     // --- adding elements to form ---
     form.appendChild(nameInput)
@@ -97,5 +101,17 @@ export const informUserWhoseTurn = (time, whoMoves) => {
         activeCounter.style.display = "none"
         unactiveCounter.innerText = time
         lastTurn = whoMoves
+    }
+}
+
+const reset = async () => {
+    try {
+        const res = await fetch("/resetGame", {
+            method: "POST"
+        })
+        const resData = await res.json()
+        console.log(resData)
+    } catch (err) {
+        console.log(err)
     }
 }

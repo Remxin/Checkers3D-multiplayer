@@ -1,8 +1,10 @@
+import { game } from "./Main.js"
 export class Pawn {
     constructor(x, y, color) {
         this.x = x
         this.y = y
         this.color = color
+        this.type = "pawn"
         this.init()
     }
 
@@ -24,7 +26,7 @@ export class Pawn {
         return this.figure
     }
 
-    showMoves(pawnsTab, moveTab) {
+    showMoves(pawnsTab) {
 
         const actualX = this.x - 1
         const actualY = this.y - 1
@@ -44,43 +46,6 @@ export class Pawn {
             }
 
 
-            // --- attacks ---
-
-
-            // !---- Stare bicie ----
-            // while (!allMoves && iterator < 8) {
-            // FIXME: jest bug przy biciu 2 pionków w różnych kierunkach
-            // FIXME: bug przy podwójnym biciu drugiego pionka
-            // FIXME: przy dużych biciach, pionek staje się niewrażliwy na bicia kolejne xD
-
-            // let wasMove = false // czy wystąpił ruch w tej turze
-
-            //     if (pawnsTab?.[actualY - iterator]?.[actualX - iterator] === 2) { // jeśli istnieje pionek
-            //         if (pawnsTab?.[actualY - iterator - 1]?.[actualX - iterator - 1] === 0 && left) { // jeśli pole za nim na ukos jest puste i dozwolone jest bicie na lewo
-            //             console.log(actualY - iterator - 1, actualX - iterator - 1)
-            //             moveTab.push({ x: actualX - iterator - 1, y: actualY - iterator - 1 })
-            //             wasMove = true
-            //         } else {
-            //             left = false // nie sprawdzaj dalej bicia na lewo
-            //         }
-            //     }
-            //     if (pawnsTab?.[actualY - iterator]?.[actualX + iterator] === 2) {
-            //         if (pawnsTab?.[actualY - iterator - 1]?.[actualX + iterator + 1] === 0 && right) { // jeśli pole za nim na ukos jest puste i dozwolone jest bicie na prawo
-            //             console.log(actualY - iterator - 1, actualX + iterator + 1)
-            //             moveTab.push({ x: actualX + iterator + 1, y: actualY - iterator - 1 })
-            //             wasMove = true
-            //         } else {
-            //             right = false // nie sprawdzaj dalej bicia na prawo
-            //         }
-            //     }
-
-            //     iterator++
-            //     if (nextIteratorValid) {
-            //         wasMove ? nextIteratorValid = false : null // gdy w następnej turze nie ma bicia, to się nie przejmuj (bo może być jeszcze w kolejnej, gdyż w tej wystąpiło)
-            //         allMoves = !wasMove // jeśli nie dodano żadnego nowego ruchu, to przerwij pętle
-            //     }
-            // }
-            // !-----
 
             // ----- hit -----
             if (pawnsTab?.[actualY - iterator]?.[actualX - iterator] === 2) { // jeśli istnieje pionek
@@ -178,14 +143,30 @@ export class Pawn {
         }
     }
 
-    moveTo(x, y) {
+    async moveTo(x, y) {
         this.x = x
         this.y = y
-        this.figure.position.set((this.x - 4.5) * 10, 0, (this.y - 4.5) * 10)
+        // this.figure.position.set((this.x - 4.5) * 10, 0, (this.y - 4.5) * 10)
+
+        await this.animate()
+        return
     }
 
+    animate() {
+        return new Promise((resolve, reject) => {
+            new TWEEN.Tween(this.figure.position) // co
+                .to({ x: (this.x - 4.5) * 10, z: (this.y - 4.5) * 10 }, 500) // do jakiej pozycji, w jakim czasie
+                .easing(TWEEN.Easing.Bounce.Out) // typ easingu (zmiana w czasie)
+                .start()
+            resolve()
+        })
+
+    }
     removeFromBoard(scene) {
         scene.remove(this.figure)
 
     }
+
+
 }
+
