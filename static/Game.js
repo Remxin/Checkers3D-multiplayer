@@ -230,8 +230,8 @@ export class Game {
 
     async movePawn(prev, actual, color, wasBeating) {
         const pawn = findPawnByPos(game.pawns, prev)
-        console.log(pawn)
-        console.log(prev, actual)
+        // console.log(pawn)
+        // console.log(prev, actual)
         pawn.moveTo(actual.x, actual.y)
         if (actual.y === 1 || actual.y === 8) {
             this.promoteToQueen(actual)
@@ -241,7 +241,8 @@ export class Game {
         }
         this.actualizeTab(prev, actual, color, pawn)
         await pawn.animate()
-        this.resolvePosBug()
+        // this.resolvePosBug()
+        // this.resolvePosBug()
     }
 
     actualizeTab(prev, actual, color) {
@@ -258,8 +259,9 @@ export class Game {
     }
 
     resolvePosBug() {
+        // console.log(this.pawns)
         this.pawns.forEach(pawn => {
-            // console.log(pawn)
+            pawn.moveTo(pawn.x, pawn.y)
             pawn.animate()
         })
     }

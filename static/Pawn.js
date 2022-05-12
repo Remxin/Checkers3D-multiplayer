@@ -164,6 +164,12 @@ export class Pawn {
     }
     removeFromBoard(scene) {
         scene.remove(this.figure)
+        console.log(game.pawns)
+        game.pawns = game.pawns.filter((p) => {
+            console.log(p.figure.material.map.uuid, this.figure.material.map.uuid)
+            return (p.figure.material.map.uuid !== this.figure.material.map.uuid)
+        })
+        console.log(game.pawns)
 
     }
 

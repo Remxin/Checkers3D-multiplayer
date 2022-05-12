@@ -62,7 +62,7 @@ export const login = async (name) => {
                 }
                 getRoundTime()
             }
-        }, 1000)
+        }, 500)
     } catch (err) {
         console.log(err)
     }
