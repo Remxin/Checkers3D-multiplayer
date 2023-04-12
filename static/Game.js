@@ -48,8 +48,8 @@ export class Game {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
 
         // --- axes ---
-        const axes = new THREE.AxesHelper(1000)
-        this.scene.add(axes)
+        // const axes = new THREE.AxesHelper(1000)
+        // this.scene.add(axes)
 
         // --- camera --- 
         this.camera.position.set(0, 50, 100)
